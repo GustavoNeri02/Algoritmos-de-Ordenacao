@@ -1,15 +1,17 @@
-import kotlin.reflect.jvm.internal.impl.descriptors.FindClassInModuleKt;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
-import java.io.IOException;
+public class Main {
+    static long movimentos = 0;
 
-public class main {
-    static int movimentos = 0;
+    public static void main(String[] args){
+        StringBuilder texto = new StringBuilder("[");
 
-    public static void main(String[] args) throws IOException {
-        String texto = "[";
+        //---Coloque aqui seu documento .txt (Ex: 2, 42, -23, 31) para ordená-lo---
+        int[] vetor = leitura("C:\\Users\\Gustavo\\Desktop\\dadosb.txt");
 
-        int[] vetor;
-        vetor = new int[]{ };
+        //---Inicio da contagem---
         long tempoInicial = System.currentTimeMillis();
 
         insertionSort(vetor);
@@ -17,56 +19,80 @@ public class main {
         //bubbleSort(vetor);
         //combSort(vetor);
 
+        //---fim da contagem---
         long tempoFinal = System.currentTimeMillis();
 
         System.out.println("Executado em = " + (tempoFinal - tempoInicial) + " ms");
 
         for (int i = 0; i < vetor.length; i++) {
-            texto += vetor[i];
+            texto.append(vetor[i]);
             if (i == vetor.length - 1) {
-                texto += "]";
+                texto.append("]");
             } else {
-                texto += ", ";
+                texto.append(", ");
             }
         }
         System.out.println(texto);
         System.out.println("Total de " + movimentos + " movimentos.");
     }
 
-    public static void insertionSort(int[] vetor) {
-        int j;
-        int key;
-        int i;
+    public static int[] leitura(String arquivo) {
 
-        for (j = 1; j < vetor.length; j++) {
-            key = vetor[j];
-            for (i = j - 1; (i >= 0) && (vetor[i] > key); i--) {
-                vetor[i + 1] = vetor[i];
-                movimentos++;
+        Path pasta = Paths.get(arquivo);
+
+        try{
+            byte[] text = Files.readAllBytes(pasta);
+
+            String[] ler = new String(text).split(", ");
+            int[] vetor = new int[ler.length];
+
+            for(int i = 0; i < ler.length; i++) {
+                vetor[i] = Integer.parseInt(ler[i]);
             }
-            vetor[i + 1] = key;
+
+            return vetor;
+        }
+
+        catch(Exception erro){
+            return null;
         }
     }
 
-    public static void selectionSort(int[] array) {
-        for (int fixo = 0; fixo < array.length - 1; fixo++) {
+
+    public static void insertionSort(int[] vetor) {
+        int j;
+        int chave;
+        int i;
+
+        for (j = 1; j < vetor.length; j++) {
+            chave = vetor[j];
+            for (i = j - 1; (i >= 0) && (vetor[i] > chave); i--) {
+                vetor[i + 1] = vetor[i];
+                movimentos++;
+            }
+            vetor[i + 1] = chave;
+        }
+    }
+
+    public static void selectionSort(int[] vetor) {
+        for (int fixo = 0; fixo < vetor.length - 1; fixo++) {
             int menor = fixo;
 
-            for (int i = menor + 1; i < array.length; i++) {
-                if (array[i] < array[menor]) {
+            for (int i = menor + 1; i < vetor.length; i++) {
+                if (vetor[i] < vetor[menor]) {
                     menor = i;
                     movimentos++;
                 }
             }
             if (menor != fixo) {
-                int t = array[fixo];
-                array[fixo] = array[menor];
-                array[menor] = t;
+                int t = vetor[fixo];
+                vetor[fixo] = vetor[menor];
+                vetor[menor] = t;
             }
         }
     }
 
-    private static void bubbleSort(int vetor[]) {
+    private static void bubbleSort(int[] vetor) {
         boolean troca = true;
         int aux;
         while (troca) {
